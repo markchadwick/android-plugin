@@ -54,9 +54,9 @@ object AndroidInstall {
 
   private def proguardTask: Project.Initialize[Task[Unit]] =
     (skipProguard, scalaInstance, classDirectory, proguardInJars, streams, 
-     classesMinJarPath, libraryJarPath, manifestPackage, proguardOption) map {
+     classesMinJarPath, libraryJarPath, manifestPackage, proguardOptions) map {
       (skipProguard, scalaInstance, classDirectory, proguardInJars, streams,
-       classesMinJarPath, libraryJarPath, manifestPackage, proguardOption) =>
+       classesMinJarPath, libraryJarPath, manifestPackage, proguardOptions) =>
       skipProguard match {
         case false => 
           val manifestr = List("!META-INF/MANIFEST.MF", "R.class", "R$*.class", 
@@ -71,6 +71,7 @@ object AndroidInstall {
                  "-outjars" :: classesMinJarPath.absolutePath ::
                  "-libraryjars" :: libraryJarPath.mkString(JFile.pathSeparator) ::
                  "-dontwarn" :: "-dontoptimize" :: "-dontobfuscate" ::
+                 "-dontpreverify" ::
                  "-dontnote scala.Enumeration" ::
                  "-dontnote org.xml.sax.EntityResolver" ::
                  "-keep public class * extends android.app.Activity" ::
@@ -82,7 +83,7 @@ object AndroidInstall {
                  "-keep public class * extends android.app.Application" ::
                  "-keep public class "+manifestPackage+".** { public protected *; }" ::
                  "-keep public class * implements junit.framework.Test { public void test*(); }" :: 
-                 proguardOption :: Nil
+                 proguardOptions.toList
           val config = new ProGuardConfiguration
           new ConfigurationParser(args.toArray[String]).parse(config)
           new ProGuard(config).execute

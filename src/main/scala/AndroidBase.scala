@@ -95,7 +95,7 @@ object AndroidBase {
 
     libraryJarPath <<= (jarPath, addonsJarPath) (_ +++ _ get),
 
-    proguardOption := "",
+    proguardOptions := Seq(),
     proguardExclude <<= 
       (libraryJarPath, classDirectory, resourceDirectory, managedClasspath) map {
         (libPath, classDirectory, resourceDirectory, managedClasspath) =>
